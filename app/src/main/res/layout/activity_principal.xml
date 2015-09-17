@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#FFFFFF"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+    <ImageButton
+        android:id="@+id/lamp_yellow"
+        android:layout_width="150dp"
+        android:layout_height="200dp"
+        android:background="@null"
+        android:scaleType="fitCenter"
+        android:src="@drawable/lamp_off" />
+
+    <ImageButton
+        android:id="@+id/micro_btn"
+        android:layout_width="75dp"
+        android:layout_height="120dp"
+        android:background="@null"
+        android:paddingBottom="0dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/microphone_button" />
+
+</LinearLayout>
