@@ -5,7 +5,7 @@ android {
     buildToolsVersion "22.0.1"
 
     defaultConfig {
-        applicationId "app.apps.plow.plow"
+        applicationId "app.plow"
         minSdkVersion 15
         targetSdkVersion 22
         versionCode 1

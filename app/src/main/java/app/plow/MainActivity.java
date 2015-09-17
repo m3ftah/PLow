@@ -1,16 +1,15 @@
-package app.apps.plow.plow;
+package app.plow;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
-import android.net.MailTo;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
+
 
 public class MainActivity extends Activity {
 
@@ -34,8 +33,6 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View arg0) {
-                // TODO Auto-generated method stub
-
                 if(bluetooth==null)
                     Toast.makeText(getApplicationContext(),"pas de bluetooth",Toast.LENGTH_SHORT).show();
                 else if (!bluetooth.isEnabled())
@@ -55,7 +52,6 @@ public class MainActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 if (bluetooth.isEnabled()) {
                     Intent i = new Intent(MainActivity.this, PrincipalActivity.class);
                     startActivity(i);
@@ -68,7 +64,6 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onResume() {
-        // TODO Auto-generated method stub
         super.onResume();
         if(!enable)btn_bluetooth.setText("activer Bluetooth");
         else btn_bluetooth.setText("desactiver Bluetooth");

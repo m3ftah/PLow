@@ -1,13 +1,11 @@
-package app.apps.plow.plow;
+package app.plow;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,7 +13,7 @@ import java.io.OutputStream;
 import java.util.UUID;
 
 /**
- * Created by guema on 9/17/2015.
+ * Created by Meftah on 9/17/2015.
  */
 public class BluetoothRC {
     private static final String TAG = "BluetoothRC";
@@ -25,6 +23,7 @@ public class BluetoothRC {
     private OutputStream outStream = null;
     private InputStream inStream = null;
     private Activity context = null;
+    private static BluetoothRC instance;
 
     // Well known SPP UUID
     private static final UUID MY_UUID = UUID
@@ -33,7 +32,14 @@ public class BluetoothRC {
     // Insert your bluetooth devices MAC address
     private static String address = "20:14:05:06:21:16";
 
-    BluetoothRC(Activity context){
+    public static BluetoothRC getInstance(Activity context){
+        if (BluetoothRC.instance == null){
+            BluetoothRC.instance = new BluetoothRC(context);
+        }
+        return BluetoothRC.instance;
+    }
+
+    private BluetoothRC(Activity context){
         this.context = context;
         btAdapter = BluetoothAdapter.getDefaultAdapter();
         checkBTState();
@@ -109,24 +115,12 @@ public class BluetoothRC {
                             + e.getMessage() + ".");
         }
 
-//		sendData("5");
-//		String str = receiveData();
-//
-//		if (str.equals("0")) {
-//			lamp_blue_on = false;
-//			lamp_blue.setImageResource(R.drawable.lamp_off);
-//		} else {
-//			lamp_blue_on = true;
-//			lamp_blue.setImageResource(R.drawable.lamp_blue);
-//		}
-
         sendData("4");
 
     }
     public void checkBTState() {
         // Check for Bluetooth support and then check to make sure it is turned
         // on
-
         // Emulator doesn't support Bluetooth and will return null
         if (btAdapter == null) {
             Log.d(TAG, "Bluetooth Not supported. Aborting.");
@@ -153,7 +147,6 @@ public class BluetoothRC {
         }
     }
     public String receiveData() {
-
         String str = null;
         try {
             int a = inStream.read();
