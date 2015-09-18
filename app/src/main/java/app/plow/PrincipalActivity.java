@@ -2,7 +2,9 @@ package app.plow;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -10,8 +12,11 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import java.util.Observable;
+import java.util.Observer;
 
-public class PrincipalActivity extends Activity {
+
+public class PrincipalActivity extends Activity implements Observer{
     private static final String TAG = "LEDOnOff";
 
     ImageButton lamp_yellow,microphone_btn;
@@ -35,6 +40,7 @@ public class PrincipalActivity extends Activity {
         lamp_yellow = (ImageButton) findViewById(R.id.lamp_yellow);
         microphone_btn=(ImageButton)findViewById(R.id.micro_btn);
         blrc = BluetoothRC.getInstance(this);
+        blrc.addObserver(this);
         gvc = new GoogleVoice(this);
 
         lamp_yellow.setOnClickListener(new OnClickListener() {
@@ -46,8 +52,9 @@ public class PrincipalActivity extends Activity {
                     sendData("2");
 
                 }
-                String str = reciveData();
-                if (str.equals("2"))
+
+                Log.d(TAG, "lampe clicked");
+                if (!lamp_yellow_on)
                     lamp_yellow.setImageResource(R.drawable.lamp_off);
                 else
                     lamp_yellow.setImageResource(R.drawable.lamp_yellow);
@@ -58,7 +65,6 @@ public class PrincipalActivity extends Activity {
 
             @Override
             public void onClick(View arg0) {
-                // TODO Auto-generated method stub
                 gvc.openMicrophone();
 
             }
@@ -67,32 +73,28 @@ public class PrincipalActivity extends Activity {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        blrc.onStart();
-        String str2 = reciveData();
-        if (str2.equals("0")) {
-            lamp_yellow_on = false;
+    public void onResume() {
+        super.onResume();
+        blrc.onResume();
+        blrc.startListening();
+        lamp_yellow_on  = getPreferences(MODE_PRIVATE).getBoolean("led",true);
+        if (!lamp_yellow_on)
             lamp_yellow.setImageResource(R.drawable.lamp_off);
-        } else {
-            lamp_yellow_on = true;
+        else
             lamp_yellow.setImageResource(R.drawable.lamp_yellow);
-        }
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
-        blrc.onStop();
+    public void onPause() {
+        super.onPause();
+        blrc.onPause();
+        getPreferences(MODE_PRIVATE).edit().putBoolean("led",lamp_yellow_on).commit();
     }
 
     private void sendData(String message) {
         blrc.sendData(message);
     }
 
-    private String reciveData() {
-        return blrc.receiveData();
-    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -101,11 +103,9 @@ public class PrincipalActivity extends Activity {
             String str2 ="";
             if(on.contains(result)){
                 sendData("3");
-                str2 = reciveData();
             }else
                 if(off.contains(result)){
                 sendData("2");
-                str2 = reciveData();
             }else
                 Toast.makeText(getBaseContext(), "Commande Inexistante",Toast.LENGTH_SHORT).show();
 
@@ -122,4 +122,17 @@ public class PrincipalActivity extends Activity {
     }
 
 
+    @Override
+    public void update(Observable observable, Object data) {
+        if (observable instanceof BluetoothRC){
+            final String str = (String) data;
+            Log.d(TAG, "observed");
+            this.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(PrincipalActivity.this, " received : " + str, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
 }
